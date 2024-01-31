@@ -46,7 +46,25 @@ namespace RT_ISICG
 		{
 			for ( int i = 0; i < width; i++ )
 			{
-				/// TODO !
+				float x = i + 0.5f, y = j + 0.5f;
+
+				Ray ray = p_camera->generateRay( x / (float)( width - 1 ), y / (float)( height - 1 ) );
+
+				float tMin = 0, tMax = 1000;
+				Vec3f color = _integrator->Li( p_scene, ray, tMin, tMax );
+				p_texture.setPixel( i, j, color );
+
+				/* 
+					p_texture.setPixel( i, j, ( ray.getDirection() + 1.f ) * 0.5f );
+				*/
+				/*
+					float r, g, b = 0.f;
+					r = i / (float) (width-1); // (MAX - MIN) * PERCENTAGE + MIN
+					g = j / (float) (height-1); // (MAX - MIN) * PERCENTAGE + MIN
+					
+					p_texture.setPixel( i, j, Vec3f( r, g, b ) );
+				*/
+			
 			}
 			progressBar.next();
 		}

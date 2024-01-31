@@ -3,6 +3,7 @@
 
 #include "base_camera.hpp"
 
+
 namespace RT_ISICG
 {
 	class PerspectiveCamera : public BaseCamera
@@ -20,8 +21,8 @@ namespace RT_ISICG
 
 		inline Ray generateRay( const float p_sx, const float p_sy ) const override
 		{
-			/// TODO !
-			return Ray( Vec3f( 0.f ), Vec3f( 0.f, 0.f, 1.f ) );
+			Vec3f direction = ( _viewportTopLeftCorner - _viewportV * p_sy + _viewportU * p_sx ) - _position;
+			return Ray( _position, glm::normalize( direction ) );
 		}
 
 	  private:
