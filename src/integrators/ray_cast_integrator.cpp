@@ -10,8 +10,7 @@ namespace RT_ISICG
 		HitRecord hitRecord;
 		if ( p_scene.intersect( p_ray, p_tMin, p_tMax, hitRecord ) )
 		{
-			float intensite = glm::max( glm::cos( glm::dot( hitRecord._normal, -p_ray.getDirection() ) ), 0.f );
-
+			float intensite = glm::max( glm::cos( glm::dot( -p_ray.getDirection(), hitRecord._normal ) ), 0.f );
 			return hitRecord._object->getMaterial()->getFlatColor() * intensite;
 		}
 		else

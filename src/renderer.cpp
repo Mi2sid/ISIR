@@ -48,10 +48,9 @@ namespace RT_ISICG
 			{
 				float x = i + 0.5f, y = j + 0.5f;
 
-				Ray ray = p_camera->generateRay( x / (float)( width - 1 ), y / (float)( height - 1 ) );
+				Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
 
-				float tMin = 0, tMax = 1000;
-				Vec3f color = _integrator->Li( p_scene, ray, tMin, tMax );
+				Vec3f color = _integrator->Li( p_scene, ray, 0, 1000 );
 				p_texture.setPixel( i, j, color );
 
 				/* 

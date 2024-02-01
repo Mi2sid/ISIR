@@ -10,12 +10,9 @@ namespace RT_ISICG
 		float c		= glm::dot( oc, oc ) - _radius * _radius;
 		float delta = b * b - 4 * c;
 
-		if (delta >= 0) {
-			float t = ( -b - sqrt( delta ) ) / 2;
-			p_t1 =  t;
-
-			float u = ( -b + sqrt( delta ) ) / 2;
-			p_t2 = u;
+		if (delta >= 0) { 
+			p_t1 = ( -b - sqrt( delta ) ) / 2;
+			p_t2 = ( -b + sqrt( delta ) ) / 2;
 
 			return true;
 		}
