@@ -17,13 +17,11 @@ namespace RT_ISICG
 		scene.init();
 
 		// Create a perspective camera.
-		PerspectiveCamera camera(
-								  Vec3f( 1.f, 0.f, 1.f ), 
+		PerspectiveCamera camera( Vec3f( 1.f, 0.f, 1.f ),
 								  Vec3f( 1.f, 0.f, 2.f ),
 								  Vec3f( 0.f, 1.f, 0.f ),
 								  60.f,
-								  float( imgWidth ) / imgHeight 
-								);
+								  float( imgWidth ) / imgHeight );
 
 		// Create and setup the renderer.
 		Renderer renderer;
