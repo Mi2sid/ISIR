@@ -46,11 +46,26 @@ namespace RT_ISICG
 		{
 			for ( int i = 0; i < width; i++ )
 			{
-				float x = i + 0.5f, y = j + 0.5f;
+				float x, y;
+				Vec3f color = VEC3F_ZERO;
 
-				Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
+				if ( _nbPixelSamples > 0 )
+				{
+					x		= i + 0.5f;
+					y		= j + 0.5f;
+					Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
+					color	= _integrator->Li( p_scene, ray, 0, 1000 );
+					for ( int k = 1; k < _nbPixelSamples; k++ )
+					{
+						x = i + glm::linearRand( 0.f, 1.f );
+						y = j + glm::linearRand( 0.f, 1.f );
 
-				Vec3f color = _integrator->Li( p_scene, ray, 0, 1000 );
+						Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
+						color += _integrator->Li( p_scene, ray, 0, 1000 );
+					}
+					color /= (float)_nbPixelSamples;
+				}
+
 				p_texture.setPixel( i, j, color );
 
 				/* 
