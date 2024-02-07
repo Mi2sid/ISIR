@@ -3,6 +3,8 @@
 #include "objects/sphere.hpp"
 #include "objects/plane.hpp"
 #include "objects/triangle_mesh.hpp"
+#include "lights/point_light.hpp"
+
 #include <assimp/Importer.hpp>
 #include <assimp/postprocess.h>
 #include <assimp/scene.h>
@@ -29,17 +31,40 @@ namespace RT_ISICG
 
 	void Scene::init()
 	{
-		// Blue Sphere 
+		switch ( _version )
+		{
+		case 1: _initScene1(); break;
+		case 2:
+		default: _initScene2(); break;
+		}
+	}
+
+	void Scene::_initScene1() {
+		// Add Object
+		_addObject( new Sphere( "Sphere1", Vec3f( 0.f, 0.f, 3.f ), 1.f ) );
+		
+		// Add Material
+		_addMaterial( new ColorMaterial( "Blue", BLUE ) );
+		
+		// Attach Material - Object
+		_attachMaterialToObject( "Blue", "Sphere1" );
+
+	}
+
+	void Scene::_initScene2() {
+		// Blue Sphere
 		_addObject( new Sphere( "Sphere1", Vec3f( 0.f, 0.f, 3.f ), 1.f ) );
 		_addMaterial( new ColorMaterial( "Blue", BLUE ) );
 		_attachMaterialToObject( "Blue", "Sphere1" );
-
 
 		// Red Plane
 		_addObject( new Plane( "Plane1", Vec3f( 0.f, -2.f, 0.f ), Vec3f( 0.f, 1.f, 0.f ) ) );
 		_addMaterial( new ColorMaterial( "Red", RED ) );
 		_attachMaterialToObject( "Red", "Plane1" );
+
+		_addLight( new PointLight( "Light1", Vec3f( 1.f, 10.f, 1.f ), WHITE, 100.f ) );
 	}
+
 
 	void Scene::loadFileTriangleMesh( const std::string & p_name, const std::string & p_path )
 	{

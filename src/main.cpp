@@ -25,9 +25,9 @@ namespace RT_ISICG
 
 		// Create and setup the renderer.
 		Renderer renderer;
-		renderer.setIntegrator( IntegratorType::RAY_CAST );
+		renderer.setIntegrator( IntegratorType::DIRECT_LIGHTING );
 		renderer.setBackgroundColor( GREY );
-		renderer.setNbPixelSamples( 16 );
+		renderer.setNbPixelSamples( 1 );
 
 		// Launch rendering.
 		std::cout << "Rendering..." << std::endl;

@@ -40,13 +40,17 @@ namespace RT_ISICG
 		void _addObject( BaseObject * p_object );
 		void _addMaterial( BaseMaterial * p_material );
 		void _addLight( BaseLight * p_light );
-
 		void _attachMaterialToObject( const std::string & p_materialName, const std::string & p_objectName );
+
+		void _initScene1();
+		void _initScene2();
 
 	  private:
 		ObjectMap	_objectMap;
 		MaterialMap _materialMap;
 		LightList	_lightList;
+
+		int _version = 2;
 	};
 } // namespace RT_ISICG
 
