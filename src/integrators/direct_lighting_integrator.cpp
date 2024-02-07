@@ -11,14 +11,21 @@ namespace RT_ISICG
 		if ( p_scene.intersect( p_ray, p_tMin, p_tMax, hitRecord ) )
 		{
 			Vec3f Li = VEC3F_ZERO;
-			for ( BaseLight *light : p_scene.getLights() ) {
-				LightSample	lightSample = light->sample( hitRecord._point );
-				float cosTheta = glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
-				Li += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
-			}
-			
+			Li += _directLighting( p_scene, hitRecord );
 			return Li;
 		}
 		else { return _backgroundColor; }
+	}
+
+	Vec3f DirectLightingIntegrator::_directLighting( const Scene & p_scene, const HitRecord hitRecord ) const
+	{
+		Vec3f Li = VEC3F_ZERO;
+		for ( BaseLight * light : p_scene.getLights() )
+		{
+			LightSample lightSample = light->sample( hitRecord._point );
+			float		cosTheta	= glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
+			Li += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
+		}
+		return Li;
 	}
 } // namespace RT_ISICG
