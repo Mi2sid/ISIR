@@ -7,6 +7,4 @@ namespace RT_ISICG
 		float distance	= glm::distance ( _position,  p_point );
 		return LightSample( direction, distance , _color * _power * (1.f / (distance * distance)) , 1.f ); 
 	}
-
-
 } // namespace RT_ISICG

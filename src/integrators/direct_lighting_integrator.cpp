@@ -26,6 +26,7 @@ namespace RT_ISICG
 		{
 			LightSample lightSample = light->sample( hitRecord._point );
 			Ray ray = Ray( hitRecord._point, lightSample._direction);
+			ray.offset( ray.getDirection() );
 			if (! p_scene.intersectAny( ray, p_tMin, lightSample._distance )) {
 				float cosTheta = glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
 				Li += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
