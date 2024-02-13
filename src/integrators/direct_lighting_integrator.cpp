@@ -35,8 +35,11 @@ namespace RT_ISICG
 					float cosTheta = glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
 					luminusContribution += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
 				}
+				if ( !light->getIsSurface() ) { i += _nbLightSamples; }
 			}
-			Li += luminusContribution / (float) _nbLightSamples;
+			luminusContribution
+				= light->getIsSurface() ? luminusContribution / (float) _nbLightSamples : luminusContribution;
+			Li += luminusContribution;
 		}
 		return Li;
 	}

@@ -51,7 +51,7 @@ namespace RT_ISICG
 		MaterialMap _materialMap;
 		LightList	_lightList;
 
-		int _version = 3;
+		int _version = 2;
 	};
 } // namespace RT_ISICG
 
