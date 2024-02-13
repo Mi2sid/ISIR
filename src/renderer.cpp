@@ -48,6 +48,8 @@ namespace RT_ISICG
 		progressBar.start( height, 50 );
 		chrono.start();
 
+
+		#pragma omp parallel for
 		for ( int j = 0; j < height; j++ )
 		{
 			for ( int i = 0; i < width; i++ )
@@ -61,6 +63,7 @@ namespace RT_ISICG
 					y		= j + 0.5f;
 					Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
 					color	= _integrator->Li( p_scene, ray, 0, 1000 );
+					
 					for ( int k = 1; k < _nbPixelSamples; k++ )
 					{
 						x = i + glm::linearRand( 0.f, 1.f );
