@@ -17,13 +17,16 @@ namespace RT_ISICG
 		virtual const std::string & getName() const final { return _name; }
 
 		inline const Vec3f & getFlatColor() const { return _color; }
+		
+		inline const bool getIsSurface() const { return _isSurface; }
 
 		virtual LightSample sample( const Vec3f & p_point ) const = 0;
 
 	  protected:
-		const std::string _name;
-		Vec3f _color = WHITE;
-		float _power = 1.f;
+		bool			  _isSurface = false;
+		const std::string _name		 = "";
+		Vec3f			  _color	 = WHITE;
+		float			  _power	 = 1.f;
 	};
 
 } // namespace RT_ISICG

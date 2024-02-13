@@ -66,8 +66,8 @@ namespace RT_ISICG
 					
 					for ( int k = 1; k < _nbPixelSamples; k++ )
 					{
-						x = i + glm::linearRand( 0.f, 1.f );
-						y = j + glm::linearRand( 0.f, 1.f );
+						x = i + randomFloat();
+						y = j + randomFloat();
 
 						Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
 						color += _integrator->Li( p_scene, ray, 0, 1000 );

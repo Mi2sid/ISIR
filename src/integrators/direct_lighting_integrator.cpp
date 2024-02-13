@@ -24,13 +24,19 @@ namespace RT_ISICG
 		Vec3f Li = VEC3F_ZERO;
 		for ( BaseLight * light : p_scene.getLights() )
 		{
-			LightSample lightSample = light->sample( hitRecord._point );
-			Ray ray = Ray( hitRecord._point, lightSample._direction);
-			ray.offset( ray.getDirection() );
-			if (! p_scene.intersectAny( ray, p_tMin, lightSample._distance )) {
-				float cosTheta = glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
-				Li += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
+			Vec3f luminusContribution = VEC3F_ZERO;
+			for ( int i = 0; i < _nbLightSamples; i++ )
+			{
+				LightSample lightSample = light->sample( hitRecord._point );
+				Ray			ray			= Ray( hitRecord._point, lightSample._direction );
+				ray.offset( ray.getDirection() );
+				if ( !p_scene.intersectAny( ray, p_tMin, lightSample._distance ) )
+				{
+					float cosTheta = glm::max( glm::dot( lightSample._direction, hitRecord._normal ), 0.f );
+					luminusContribution += hitRecord._object->getMaterial()->getFlatColor() * lightSample._radiance * cosTheta;
+				}
 			}
+			Li += luminusContribution / (float) _nbLightSamples;
 		}
 		return Li;
 	}
