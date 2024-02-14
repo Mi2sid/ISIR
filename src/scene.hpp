@@ -45,13 +45,14 @@ namespace RT_ISICG
 		void _initScene1();
 		void _initScene2();
 		void _initScene3();
+		void _initScene4();
 
 	  private:
 		ObjectMap	_objectMap;
 		MaterialMap _materialMap;
 		LightList	_lightList;
 
-		int _version = 2;
+		int _version = 4;
 	};
 } // namespace RT_ISICG
 

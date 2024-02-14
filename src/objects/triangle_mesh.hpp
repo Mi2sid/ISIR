@@ -47,6 +47,7 @@ namespace RT_ISICG
 		std::vector<Vec3f>				  _normals;
 		std::vector<Vec2f>				  _uvs;
 		std::vector<TriangleMeshGeometry> _triangles;
+		bool							  _interpolation = true;
 	};
 } // namespace RT_ISICG
 
