@@ -10,6 +10,10 @@ namespace RT_ISICG
 		float  tClosest = p_tMax;			 // Hit distance.
 		Vec3f  n		= VEC3F_ZERO;
 		size_t hitTri	= _triangles.size(); // Hit triangle id.
+
+		if ( !_aabb.intersect( p_ray, p_tMin, p_tMax ) ) return false;
+
+
 		for ( size_t i = 0; i < _triangles.size(); i++ )
 		{
 			float t;
@@ -39,6 +43,7 @@ namespace RT_ISICG
 
 	bool MeshTriangle::intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
 	{
+		if ( !_aabb.intersect( p_ray, p_tMin, p_tMax) ) return false;
 		for ( size_t i = 0; i < _triangles.size(); i++ )
 		{
 			Vec3f n = VEC3F_ZERO;
