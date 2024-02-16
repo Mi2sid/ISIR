@@ -6,8 +6,8 @@ namespace RT_ISICG
 {
 	int main( int argc, char ** argv )
 	{
-		const int imgWidth	= 150;
-		const int imgHeight = 100;
+		const int imgWidth	= 300;
+		const int imgHeight = 200;
 
 		// Create a texture to render the scene.
 		Texture img = Texture( imgWidth, imgHeight );
