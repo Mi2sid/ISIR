@@ -4,6 +4,8 @@
 #include "aabb.hpp"
 #include "hit_record.hpp"
 #include <vector>
+#include <algorithm>
+#include <functional>
 
 namespace RT_ISICG
 {
@@ -41,6 +43,8 @@ namespace RT_ISICG
 		bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const;
 
 	  private:
+		bool _compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node );
+
 		void _buildRec( BVHNode *		   p_node,
 						const unsigned int p_firstTriangleId,
 						const unsigned int p_nbTriangles,

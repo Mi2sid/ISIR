@@ -48,8 +48,16 @@ namespace RT_ISICG
 
 		if ( !(p_depth < _maxDepth && nbTriangles > _maxTrianglesPerLeaf) ) {
 			// ALLER VOIR FONCTION STD PARTITION <algorithm>
-			unsigned int idPartition = _maxAxisPartition( p_node, p_firstTriangleId, p_lastTriangleId );
-
+			// unsigned int idPartition = _maxAxisPartition( p_node, p_firstTriangleId, p_lastTriangleId );
+			unsigned int idPartition = std::distance( _triangles->begin(),
+												 std::partition( _triangles->begin() + p_firstTriangleId,
+												 _triangles->begin() + p_lastTriangleId + 1,
+												 [ p_node ]( TriangleMeshGeometry triangle ) {
+													 size_t axisPartition = p_node->_aabb.largestAxis();
+													 return triangle.getAABB().getMin()[ axisPartition ]
+															<= p_node->_aabb.centroid()[ axisPartition ];
+												 } )
+												);
 			p_node->_left = new BVHNode();
 			p_node->_right = new BVHNode();
 
@@ -58,6 +66,16 @@ namespace RT_ISICG
 		}
 	}
 
+	bool BVH::_compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node )
+	{
+		return triangle.getAABB().getMin()[ p_node->_aabb.largestAxis() ]
+			   <= p_node->_aabb.centroid()[ p_node->_aabb.largestAxis() ];
+	}
+	bool _compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node )
+	{
+		return triangle.getAABB().getMin()[ p_node->_aabb.largestAxis() ]
+			   <= p_node->_aabb.centroid()[ p_node->_aabb.largestAxis() ];
+	}
 
 
 	unsigned int BVH::_maxAxisPartition( BVHNode *			p_node,
