@@ -37,8 +37,9 @@ namespace RT_ISICG
 		case 1: _initScene1(); break;
 		case 2: _initScene2(); break;
 		case 3: _initScene3(); break;
-		case 4:
-		default: _initScene4(); break;
+		case 4: _initScene4(); break;
+		case 5:
+		default: _initScene5(); break;
 		}
 	}
 
@@ -118,6 +119,18 @@ namespace RT_ISICG
 		// Add lights .
 		// ================================================================
 		_addLight( new PointLight( "Light1",  Vec3f( 0.f, 3.f, -5.f ), WHITE, 100.f ) );
+
+	}
+
+	void Scene::_initScene5()
+	{
+		loadFileTriangleMesh( "Conference", "data/conference/conference.obj" );
+		_addLight( new QuadLight( "Light1",
+								  Vec3f( 900.f, 600.f, -300.f ),
+								  Vec3f( -800.f, 0.f, 0.f ),
+								  Vec3f( 0.f, 0.f, 300.f ),
+								  WHITE,
+								  20.f ) );
 	}
 
 
@@ -184,8 +197,8 @@ namespace RT_ISICG
 				aiString mtlName;
 				mtl->Get( AI_MATKEY_NAME, mtlName );
 
-				/* _addMaterial( new ColorMaterial( std::string( mtlName.C_Str() ), kd ) );
-				_attachMaterialToObject( mtlName.C_Str(), meshName );*/
+				_addMaterial( new ColorMaterial( std::string( mtlName.C_Str() ), kd ) );
+				_attachMaterialToObject( mtlName.C_Str(), meshName );
 			}
 
 			std::cout << "-- [DONE] " << triMesh->getNbTriangles() << " triangles, " << triMesh->getNbVertices()

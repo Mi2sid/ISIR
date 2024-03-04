@@ -62,7 +62,7 @@ namespace RT_ISICG
 					x		= i + 0.5f;
 					y		= j + 0.5f;
 					Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
-					color	= _integrator->Li( p_scene, ray, 0, 1000 );
+					color	= _integrator->Li( p_scene, ray, 0, 10000 );
 					
 					for ( int k = 1; k < _nbPixelSamples; k++ )
 					{
@@ -70,7 +70,7 @@ namespace RT_ISICG
 						y = j + randomFloat();
 
 						Ray ray = p_camera->generateRay( x / (float)( width ), y / (float)( height ) );
-						color += _integrator->Li( p_scene, ray, 0, 1000 );
+						color += _integrator->Li( p_scene, ray, 0, 10000 );
 					}
 					color /= (float)_nbPixelSamples;
 				}

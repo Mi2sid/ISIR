@@ -16,7 +16,8 @@ namespace RT_ISICG
 		Chrono chr;
 		chr.start();
 
-		/// TODO
+		_root = new BVHNode();
+		_buildRec( _root, 0, _triangles->size() - 1, 0 );
 
 		chr.stop();
 
@@ -25,14 +26,12 @@ namespace RT_ISICG
 
 	bool BVH::intersect( const Ray & p_ray, const float p_tMin, const float p_tMax, HitRecord & p_hitRecord ) const
 	{
-		/// TODO
-		return false;
+		return _intersectRec( _root, p_ray, p_tMin, p_tMax, p_hitRecord ); 
 	}
 
 	bool BVH::intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
 	{
-		/// TODO
-		return false;
+		return _intersectAnyRec( _root, p_ray, p_tMin, p_tMax );
 	}
 
 	void BVH::_buildRec( BVHNode *			p_node,
@@ -40,7 +39,35 @@ namespace RT_ISICG
 						 const unsigned int p_lastTriangleId,
 						 const unsigned int p_depth )
 	{
-		/// TODO
+		// Calcul aabb noeud
+		p_node->_aabb = AABB();
+		for ( int i = p_firstTriangleId; i <= p_lastTriangleId; i++ )
+			p_node->_aabb.extend( ( *_triangles )[ i ].getAABB() );
+
+		unsigned int nbTriangles = p_lastTriangleId - p_firstTriangleId + 1 ;
+
+		if ( !(p_depth < _maxDepth && nbTriangles > _maxTrianglesPerLeaf) ) {
+			// ALLER VOIR FONCTION STD PARTITION <algorithm>
+			unsigned int idPartition = _maxAxisPartition( p_node, p_firstTriangleId, p_lastTriangleId );
+
+			p_node->_left = new BVHNode();
+			p_node->_right = new BVHNode();
+
+			_buildRec( p_node->_left, p_firstTriangleId, idPartition, p_depth + 1 );
+			_buildRec( p_node->_right, idPartition + 1, p_lastTriangleId, p_depth + 1 );
+		}
+	}
+
+
+
+	unsigned int BVH::_maxAxisPartition( BVHNode *			p_node,
+										 const unsigned int p_firstTriangleId,
+										 const unsigned int p_lastTriangleId )
+	{ 
+		size_t axisPartition = p_node->_aabb.largestAxis();
+		float  middle		 = p_node->_aabb.centroid()[axisPartition]; 
+		for (int i = p_firstTriangleId; i <= p_lastTriangleId; i++) if ( ( *_triangles )[ i ].getAABB().getMin()[ axisPartition ] > middle ) return i;
+		return p_lastTriangleId;
 	}
 
 	bool BVH::_intersectRec( const BVHNode * p_node,

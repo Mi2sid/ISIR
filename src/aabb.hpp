@@ -27,7 +27,8 @@ namespace RT_ISICG
 		// Extends the AABB with another AABB
 		inline void extend( const AABB & p_aabb )
 		{
-			/// TODO
+			_min = glm::min( p_aabb._min, _min );
+			_max = glm::max( p_aabb._max, _max );
 		}
 
 		// Returns the AABB diagonal vector.

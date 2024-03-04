@@ -56,6 +56,10 @@ namespace RT_ISICG
 							   const Ray &	   p_ray,
 							   const float	   p_tMin,
 							   const float	   p_tMax ) const;
+		unsigned int _maxAxisPartition( BVHNode *		   p_node,
+										const unsigned int p_firstTriangleId,
+										const unsigned int p_lastTriangleId );
+
 
 	  private:
 		std::vector<TriangleMeshGeometry> * _triangles = nullptr;
