@@ -11,6 +11,10 @@ namespace RT_ISICG
 		Vec3f  n		= VEC3F_ZERO;
 		size_t hitTri	= _triangles.size(); // Hit triangle id.
 
+		bool a = _bvh.intersect( p_ray, p_tMin, p_tMax, p_hitRecord );
+		std::cout << a << std::endl;
+		return a;
+
 		if ( !_aabb.intersect( p_ray, p_tMin, p_tMax ) ) return false;
 
 
@@ -43,6 +47,8 @@ namespace RT_ISICG
 
 	bool MeshTriangle::intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const
 	{
+		return _bvh.intersectAny( p_ray, p_tMin, p_tMax );
+
 		if ( !_aabb.intersect( p_ray, p_tMin, p_tMax) ) return false;
 		for ( size_t i = 0; i < _triangles.size(); i++ )
 		{

@@ -175,6 +175,8 @@ namespace RT_ISICG
 				triMesh->addTriangle( face.mIndices[ 0 ], face.mIndices[ 1 ], face.mIndices[ 2 ] );
 			}
 
+
+			triMesh->createBVH();
 			_addObject( triMesh );
 
 			const aiMaterial * const mtl = scene->mMaterials[ mesh->mMaterialIndex ];

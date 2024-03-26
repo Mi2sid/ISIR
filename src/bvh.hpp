@@ -3,9 +3,12 @@
 
 #include "aabb.hpp"
 #include "hit_record.hpp"
+#include "geometry/triangle_mesh_geometry.hpp"
+#include "objects/base_object.hpp"
 #include <vector>
 #include <algorithm>
 #include <functional>
+#include <iostream>
 
 namespace RT_ISICG
 {
@@ -20,7 +23,7 @@ namespace RT_ISICG
 			delete _right;
 		}
 		bool isLeaf() const { return ( _left == nullptr && _right == nullptr ); }
-
+		
 		AABB		 _aabb;
 		BVHNode *	 _left			  = nullptr;
 		BVHNode *	 _right			  = nullptr;
@@ -43,7 +46,7 @@ namespace RT_ISICG
 		bool intersectAny( const Ray & p_ray, const float p_tMin, const float p_tMax ) const;
 
 	  private:
-		bool _compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node );
+		// bool _compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node );
 
 		void _buildRec( BVHNode *		   p_node,
 						const unsigned int p_firstTriangleId,
@@ -60,6 +63,7 @@ namespace RT_ISICG
 							   const Ray &	   p_ray,
 							   const float	   p_tMin,
 							   const float	   p_tMax ) const;
+
 		unsigned int _maxAxisPartition( BVHNode *		   p_node,
 										const unsigned int p_firstTriangleId,
 										const unsigned int p_lastTriangleId );
@@ -70,7 +74,7 @@ namespace RT_ISICG
 		BVHNode *							_root	   = nullptr;
 
 		const unsigned int _maxTrianglesPerLeaf = 8;
-		const unsigned int _maxDepth			= 32;
+		const unsigned int _maxDepth			= 3;
 	};
 
 } // namespace RT_ISICG

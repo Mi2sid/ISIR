@@ -17,7 +17,7 @@ namespace RT_ISICG
 		chr.start();
 
 		_root = new BVHNode();
-		_buildRec( _root, 0, _triangles->size() - 1, 0 );
+		_buildRec( _root, 0, _triangles->size(), 0 );
 
 		chr.stop();
 
@@ -41,23 +41,34 @@ namespace RT_ISICG
 	{
 		// Calcul aabb noeud
 		p_node->_aabb = AABB();
-		for ( int i = p_firstTriangleId; i <= p_lastTriangleId; i++ )
+		for ( int i = p_firstTriangleId; i < p_lastTriangleId; i++ )
 			p_node->_aabb.extend( ( *_triangles )[ i ].getAABB() );
 
-		unsigned int nbTriangles = p_lastTriangleId - p_firstTriangleId + 1 ;
+		p_node->_firstTriangleId = p_firstTriangleId;
+		p_node->_lastTriangleId	 = p_lastTriangleId;
 
-		if ( !(p_depth < _maxDepth && nbTriangles > _maxTrianglesPerLeaf) ) {
-			// ALLER VOIR FONCTION STD PARTITION <algorithm>
-			// unsigned int idPartition = _maxAxisPartition( p_node, p_firstTriangleId, p_lastTriangleId );
-			unsigned int idPartition = std::distance( _triangles->begin(),
-												 std::partition( _triangles->begin() + p_firstTriangleId,
-												 _triangles->begin() + p_lastTriangleId + 1,
-												 [ p_node ]( TriangleMeshGeometry triangle ) {
-													 size_t axisPartition = p_node->_aabb.largestAxis();
-													 return triangle.getAABB().getMin()[ axisPartition ]
-															<= p_node->_aabb.centroid()[ axisPartition ];
-												 } )
-												);
+		unsigned int nbTriangles = p_lastTriangleId - p_firstTriangleId ;
+
+		if ( p_depth < _maxDepth && nbTriangles > _maxTrianglesPerLeaf ) {
+
+			// Partitions function
+			size_t axisPartition = p_node->_aabb.largestAxis();
+			Vec3f middle		 = p_node->_aabb.centroid();
+			std::function<bool( TriangleMeshGeometry )> largestAxisSplit
+				= [ middle, axisPartition ]( TriangleMeshGeometry triangle ) -> bool
+			{
+				float a = triangle.getAABB().getMin()[ axisPartition ];
+				float b = middle[ axisPartition ];
+
+				return a <= b;
+			};
+			unsigned int idPartition = std::distance( _triangles->begin(), 
+														std::partition(
+															_triangles->begin() + p_firstTriangleId,
+															_triangles->begin() + p_lastTriangleId - 1,
+															largestAxisSplit
+														)
+													);
 			p_node->_left = new BVHNode();
 			p_node->_right = new BVHNode();
 
@@ -65,19 +76,7 @@ namespace RT_ISICG
 			_buildRec( p_node->_right, idPartition + 1, p_lastTriangleId, p_depth + 1 );
 		}
 	}
-
-	bool BVH::_compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node )
-	{
-		return triangle.getAABB().getMin()[ p_node->_aabb.largestAxis() ]
-			   <= p_node->_aabb.centroid()[ p_node->_aabb.largestAxis() ];
-	}
-	bool _compareTriangles( const TriangleMeshGeometry & triangle, const BVHNode * p_node )
-	{
-		return triangle.getAABB().getMin()[ p_node->_aabb.largestAxis() ]
-			   <= p_node->_aabb.centroid()[ p_node->_aabb.largestAxis() ];
-	}
-
-
+	/*
 	unsigned int BVH::_maxAxisPartition( BVHNode *			p_node,
 										 const unsigned int p_firstTriangleId,
 										 const unsigned int p_lastTriangleId )
@@ -86,7 +85,7 @@ namespace RT_ISICG
 		float  middle		 = p_node->_aabb.centroid()[axisPartition]; 
 		for (int i = p_firstTriangleId; i <= p_lastTriangleId; i++) if ( ( *_triangles )[ i ].getAABB().getMin()[ axisPartition ] > middle ) return i;
 		return p_lastTriangleId;
-	}
+	}*/
 
 	bool BVH::_intersectRec( const BVHNode * p_node,
 							 const Ray &	 p_ray,
@@ -94,15 +93,62 @@ namespace RT_ISICG
 							 const float	 p_tMax,
 							 HitRecord &	 p_hitRecord ) const
 	{
-		/// TODO
-		return false;
+		if ( !p_node->_aabb.intersect( p_ray, p_tMin, p_tMax ) ) { return false; } 
+
+		if ( !p_node->isLeaf() ) {
+			if ( p_node->_left != nullptr ) _intersectRec( p_node->_left, p_ray, p_tMin, p_tMax, p_hitRecord );
+			if ( p_node->_right != nullptr ) _intersectRec( p_node->_right, p_ray, p_tMin, p_tMax, p_hitRecord );
+			return p_hitRecord._object != nullptr;
+		}
+		for ( size_t i = p_node->_firstTriangleId; i < p_node->_lastTriangleId; i++ )
+		{
+			float t;
+			Vec3f normal;
+			if ( _triangles->at( i ).intersect( p_ray, t, normal ) )
+			{
+				if ( p_tMin <= t && t <= p_tMax )
+				{
+					if ( p_hitRecord._object != nullptr && t > p_hitRecord._distance )
+						continue;
+	
+					TriangleMeshGeometry triangle = _triangles->at( i );
+					p_hitRecord._point		 = p_ray.pointAtT( t );
+					p_hitRecord._normal		 = normal;
+					p_hitRecord.faceNormal( p_ray.getDirection() );
+					p_hitRecord._distance = t;
+					p_hitRecord._object	  = (BaseObject *)( triangle.getMesh() );
+				}
+			}
+			return p_hitRecord._object != nullptr;
+		}
 	}
+
 	bool BVH::_intersectAnyRec( const BVHNode * p_node,
 								const Ray &		p_ray,
 								const float		p_tMin,
 								const float		p_tMax ) const
 	{
-		/// TODO
-		return false;
+		if ( !p_node->_aabb.intersect( p_ray, p_tMin, p_tMax ) ) { return false; }
+
+		if ( !p_node->isLeaf() )
+		{
+			if ( p_node->_left != nullptr ) { 
+				if ( _intersectAnyRec( p_node->_left, p_ray, p_tMin, p_tMax ) ) return true;
+			}
+			if ( p_node->_right != nullptr ) { 
+				if( _intersectAnyRec( p_node->_right, p_ray, p_tMin, p_tMax ) ) return true; 
+			}
+			return false;
+		}
+		for ( size_t i = p_node->_firstTriangleId; i < p_node->_lastTriangleId; i++ )
+		{
+			float t;
+			Vec3f normal;
+			if ( _triangles->at( i ).intersect( p_ray, t, normal ) )
+			{
+				if ( p_tMin <= t && t <= p_tMax ) return true;
+			}
+			return false;
+		}
 	}
 } // namespace RT_ISICG

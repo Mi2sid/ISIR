@@ -25,6 +25,8 @@ namespace RT_ISICG
 
 		inline const AABB & getAABB() const { return _aabb; }
 
+		inline const MeshTriangle * getMesh() const { return _refMesh; }
+
 	  private:
 		MeshTriangle * _refMesh;
 		AABB		   _aabb;
